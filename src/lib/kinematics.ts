@@ -28,7 +28,8 @@ export function deriveXAxisKinematics(samples: MotionSample[]): KinematicPoint[]
   let position = 0;
 
   for (const sample of samples) {
-    const acceleration = primaryAcceleration(sample).x;
+    // No integrar accelerationIncludingGravity: la gravedad produciría una velocidad falsa.
+    const acceleration = sample.acceleration.x;
     if (acceleration === null) continue;
 
     if (previousTime !== null && previousAcceleration !== null) {

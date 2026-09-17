@@ -616,8 +616,8 @@ export function App() {
                 <section className="summary-grid">
                   <div className="summary-item"><span>Duración</span><strong>{formatDuration(measurement.summary.durationMs)}</strong><small>tiempo capturado</small></div>
                   <div className="summary-item"><span>Frecuencia</span><strong>{measurement.summary.frequencyHz ? `${measurement.summary.frequencyHz.toFixed(1)} Hz` : "-"}</strong><small>muestras por segundo</small></div>
-                  <div className="summary-item"><span>Pico de aceleración</span><strong>{measurement.summary.peakAcceleration ? `${measurement.summary.peakAcceleration.toFixed(2)}` : "-"}</strong><small>m/s2</small></div>
-                  <div className="summary-item"><span>Pico de giro</span><strong>{measurement.summary.peakRotation ? `${measurement.summary.peakRotation.toFixed(1)}` : "-"}</strong><small>grados/s</small></div>
+                  <div className="summary-item"><span>Pico de aceleración</span><strong>{measurement.summary.peakAcceleration !== null ? measurement.summary.peakAcceleration.toFixed(2) : "-"}</strong><small>m/s2</small></div>
+                  <div className="summary-item"><span>Pico de giro</span><strong>{measurement.summary.peakRotation !== null ? measurement.summary.peakRotation.toFixed(1) : "-"}</strong><small>grados/s</small></div>
                 </section>
 
                 {kinematicPoints.length > 1 ? (
