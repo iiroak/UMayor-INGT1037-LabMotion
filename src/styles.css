@@ -207,11 +207,6 @@ button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke
 .procedure-list { display: grid; gap: 11px; margin: 18px 0 0; padding: 0; list-style: none; }
 .procedure-list li { display: flex; align-items: flex-start; gap: 10px; color: var(--text-secondary); font-size: .76rem; }
 .procedure-list li span { flex: 0 0 auto; color: var(--app-accent-dark); font-family: var(--font-mono); font-size: .65rem; font-weight: 700; }
-.physical-card { background: var(--theme-green-background); border-color: #53b55933; }
-.physical-card h3 { margin: 17px 0 6px; font-size: 1rem; font-weight: 600; }
-.physical-card p { margin: 0; color: var(--text-secondary); font-size: .78rem; line-height: 1.5; }
-.physical-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 19px; }
-.physical-tags span { padding: 5px 8px; border-radius: 999px; background: #ffffff99; color: var(--text-secondary); font-size: .65rem; font-weight: 700; }
 
 .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; margin: 12px 0; }
 .summary-item { display: grid; gap: 3px; min-width: 0; padding: 13px; border: 1px solid var(--app-border); border-radius: var(--radius-lg); background: var(--app-surface); }

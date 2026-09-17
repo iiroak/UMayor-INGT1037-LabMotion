@@ -423,12 +423,6 @@ export function App() {
                   <li><span>04</span>Detén, observa el gráfico y exporta los datos.</li>
                 </ol>
               </section>
-              <section className="card compact-card physical-card">
-                <span className="eyebrow">Fuentes futuras</span>
-                <h3>GPS + cámara + micrófono</h3>
-                <p>El catálogo documenta otras fuentes posibles, pero esta versión demuestra las mediciones de movimiento que el navegador ya entrega.</p>
-                <div className="physical-tags"><span>GPS: posible</span><span>cámara: posible</span><span>barómetro: no expuesto</span></div>
-              </section>
             </div>
           </section>
         ) : null}
