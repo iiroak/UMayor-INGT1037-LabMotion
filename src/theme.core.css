@@ -1,0 +1,73 @@
+/**
+ * LabMotion usa los mismos tokens visuales que QrIRK/apps/web.
+ * Se mantiene local para que la demo no dependa de un CDN en runtime.
+ */
+:root {
+  --accent-blue: #3a83f7;
+  --accent-green: #53b559;
+  --accent-orange: #ee7c37;
+  --accent-purple: #a67df2;
+  --bg-primary: #fff;
+  --bg-secondary: #e8e8e8;
+  --bg-secondary-surface: #f9f9f9;
+  --bg-status-error: #fff0f0;
+  --bg-status-success: #def3e5;
+  --bg-status-warning: #fdf5f1;
+  --border-default: #0000001a;
+  --border-medium: #00000026;
+  --composer-surface-primary: #fff;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-weight-semibold: 600;
+  --main-surface-primary: #fcfcfc;
+  --main-surface-secondary: #f9f9f9;
+  --radius-lg: .5rem;
+  --radius-xl: .75rem;
+  --radius-2xl: 1rem;
+  --shadow-sm: 0 1px 3px #0000001a, 0 1px 2px #0000000d;
+  --shadow-lg: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
+  --text-primary: #0d0d0d;
+  --text-secondary: #5d5d5d;
+  --text-tertiary: #8f8f8f;
+  --text-error: #f93a37;
+  --text-status-success: #1f4e25;
+  --text-status-warning: #d25e28;
+  --theme-blue-background: #e8f3fe;
+  --theme-blue-default: #3a83f7;
+  --theme-blue-text: #1f4e94;
+  --theme-green-background: #def3e5;
+  --theme-orange-background: #fff0e6;
+  --theme-orange-default: #ee7c37;
+  --theme-purple-background: #eee8fc;
+  --theme-submit-btn-bg: #000;
+  --theme-submit-btn-text: #fff;
+}
+
+html.dark, .dark, [data-theme="dark"] {
+  --bg-primary: #212121;
+  --bg-secondary: #303030;
+  --bg-secondary-surface: #000;
+  --bg-status-error: #4d100e;
+  --bg-status-success: #1f4e25;
+  --bg-status-warning: #45240d;
+  --border-default: #ffffff26;
+  --border-medium: #ffffff40;
+  --composer-surface-primary: #212121;
+  --main-surface-primary: #000;
+  --main-surface-secondary: #303030;
+  --text-primary: #fff;
+  --text-secondary: #cdcdcd;
+  --text-tertiary: #afafaf;
+  --text-error: #ff8583;
+  --text-status-success: #effaf3;
+  --text-status-warning: #f1a275;
+  --theme-blue-background: #0f2c54;
+  --theme-blue-default: #63a8f8;
+  --theme-blue-text: #b7d7ff;
+  --theme-green-background: #163d20;
+  --theme-orange-background: #653218;
+  --theme-orange-default: #f29a67;
+  --theme-purple-background: #3b2666;
+  --theme-submit-btn-bg: #fff;
+  --theme-submit-btn-text: #000;
+}
