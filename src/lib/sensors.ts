@@ -1,3 +1,5 @@
+import { magnitudDeVector } from "./fisica";
+
 export type Axis = {
   x: number | null;
   y: number | null;
@@ -67,12 +69,8 @@ export function axisHasData(axis: Axis): boolean {
 }
 
 export function axisMagnitude(axis: Axis): number | null {
-  if (!axisHasData(axis)) return null;
-  return Math.sqrt(
-    (axis.x ?? 0) ** 2 +
-    (axis.y ?? 0) ** 2 +
-    (axis.z ?? 0) ** 2,
-  );
+  if (axis.x === null || axis.y === null || axis.z === null) return null;
+  return magnitudDeVector({ x: axis.x, y: axis.y, z: axis.z });
 }
 
 function browserFeature(name: string): boolean {

@@ -1,3 +1,4 @@
+import { integrarTrapecio, frecuenciaDeMuestreo, magnitudDeVector } from "./fisica";
 import { primaryAcceleration, type MotionSample } from "./sensors";
 
 export type KinematicPoint = {
@@ -14,12 +15,6 @@ export type MeasurementSummary = {
   peakRotation: number | null;
 };
 
-function averageFrequency(samples: MotionSample[]): number | null {
-  if (samples.length < 2) return null;
-  const elapsedMs = samples[samples.length - 1].tMs - samples[0].tMs;
-  return elapsedMs > 0 ? ((samples.length - 1) / elapsedMs) * 1000 : null;
-}
-
 export function deriveXAxisKinematics(samples: MotionSample[]): KinematicPoint[] {
   const points: KinematicPoint[] = [];
   let previousTime: number | null = null;
@@ -30,13 +25,18 @@ export function deriveXAxisKinematics(samples: MotionSample[]): KinematicPoint[]
   for (const sample of samples) {
     // No integrar accelerationIncludingGravity: la gravedad produciría una velocidad falsa.
     const acceleration = sample.acceleration.x;
-    if (acceleration === null) continue;
+    if (acceleration === null) {
+      // Un hueco invalida la continuidad del trapecio: no inventar muestras intermedias.
+      previousTime = null;
+      previousAcceleration = null;
+      continue;
+    }
 
     if (previousTime !== null && previousAcceleration !== null) {
       const deltaSeconds = Math.min((sample.tMs - previousTime) / 1000, 0.25);
       if (deltaSeconds > 0) {
-        const nextVelocity = velocity + ((previousAcceleration + acceleration) / 2) * deltaSeconds;
-        position += ((velocity + nextVelocity) / 2) * deltaSeconds;
+        const nextVelocity = velocity + integrarTrapecio(previousAcceleration, acceleration, deltaSeconds);
+        position += integrarTrapecio(velocity, nextVelocity, deltaSeconds);
         velocity = nextVelocity;
       }
     }
@@ -56,22 +56,18 @@ export function summarizeMeasurement(samples: MotionSample[]): MeasurementSummar
 
   for (const sample of samples) {
     const acceleration = primaryAcceleration(sample);
-    const accelerationMagnitude = Math.sqrt(
-      (acceleration.x ?? 0) ** 2 +
-      (acceleration.y ?? 0) ** 2 +
-      (acceleration.z ?? 0) ** 2,
-    );
+    const accelerationMagnitude = acceleration.x !== null && acceleration.y !== null && acceleration.z !== null
+      ? magnitudDeVector({ x: acceleration.x, y: acceleration.y, z: acceleration.z })
+      : null;
     const rotation = sample.rotationRate;
-    const rotationMagnitude = Math.sqrt(
-      (rotation.x ?? 0) ** 2 +
-      (rotation.y ?? 0) ** 2 +
-      (rotation.z ?? 0) ** 2,
-    );
+    const rotationMagnitude = rotation.x !== null && rotation.y !== null && rotation.z !== null
+      ? magnitudDeVector({ x: rotation.x, y: rotation.y, z: rotation.z })
+      : null;
 
-    if (peakAcceleration === null || accelerationMagnitude > peakAcceleration) {
+    if (accelerationMagnitude !== null && (peakAcceleration === null || accelerationMagnitude > peakAcceleration)) {
       peakAcceleration = accelerationMagnitude;
     }
-    if (peakRotation === null || rotationMagnitude > peakRotation) {
+    if (rotationMagnitude !== null && (peakRotation === null || rotationMagnitude > peakRotation)) {
       peakRotation = rotationMagnitude;
     }
   }
@@ -79,7 +75,7 @@ export function summarizeMeasurement(samples: MotionSample[]): MeasurementSummar
   return {
     durationMs,
     samples: samples.length,
-    frequencyHz: averageFrequency(samples),
+    frequencyHz: frecuenciaDeMuestreo(samples.map((sample) => sample.tMs)),
     peakAcceleration,
     peakRotation,
   };

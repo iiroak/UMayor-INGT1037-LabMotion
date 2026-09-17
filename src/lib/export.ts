@@ -17,7 +17,7 @@ function downloadBlob(content: string, filename: string, type: string): void {
   window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-export function downloadMeasurementCsv(samples: MotionSample[], experiment: string): void {
+export function downloadMeasurementCsv(samples: MotionSample[], captureLabel: string): void {
   const firstTime = samples[0]?.tMs ?? 0;
   const rows = samples.map((sample) => [
     (sample.tMs - firstTime).toFixed(2),
@@ -37,7 +37,7 @@ export function downloadMeasurementCsv(samples: MotionSample[], experiment: stri
   ].join(","));
 
   const csv = [
-    `# LabMotion | Experimento: ${experiment}`,
+    `# LabMotion | Captura: ${captureLabel}`,
     "t_ms,ax_m_s2,ay_m_s2,az_m_s2,ax_gravity_m_s2,ay_gravity_m_s2,az_gravity_m_s2,alpha_deg_s,beta_deg_s,gamma_deg_s,orientation_alpha_deg,orientation_beta_deg,orientation_gamma_deg,interval_ms",
     ...rows,
   ].join("\n");
@@ -46,7 +46,7 @@ export function downloadMeasurementCsv(samples: MotionSample[], experiment: stri
 
 export function downloadMeasurementJson(
   samples: MotionSample[],
-  experiment: string,
+  captureLabel: string,
   diagnostics: Diagnostics,
 ): void {
   const firstTime = samples[0]?.tMs ?? 0;
@@ -57,7 +57,7 @@ export function downloadMeasurementJson(
   const json = JSON.stringify(
     {
       project: "LabMotion",
-      experiment,
+      capture: captureLabel,
       capturedAt: new Date().toISOString(),
       diagnostics,
       samples: normalizedSamples,

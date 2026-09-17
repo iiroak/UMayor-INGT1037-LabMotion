@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { CalculationCatalog } from "./components/CalculationCatalog";
 import { KinematicsChart, StripChart, type SensorChartMode } from "./components/StripChart";
 import { Modal, TopAlert } from "./components/ui";
 import { getDiagnostics, diagnosticsText, type Diagnostics } from "./lib/diagnostics";
 import { copyText, downloadMeasurementCsv, downloadMeasurementJson } from "./lib/export";
+import { frecuenciaDeMuestreo } from "./lib/fisica";
 import { deriveXAxisKinematics, summarizeMeasurement, type MeasurementSummary } from "./lib/kinematics";
 import {
-  axisMagnitude,
   getSensorCapabilities,
-  primaryAcceleration,
-  primaryAccelerationIncludesGravity,
   requestMotionPermission,
   subscribeToSensors,
   type MotionSample,
@@ -16,17 +15,9 @@ import {
   type SensorState,
 } from "./lib/sensors";
 
-type Tab = "live" | "measure" | "charts" | "diagnostics";
-
-type Experiment = {
-  id: string;
-  name: string;
-  description: string;
-  question: string;
-};
+type Tab = "calculations" | "measure" | "charts" | "diagnostics";
 
 type Measurement = {
-  experiment: Experiment;
   samples: MotionSample[];
   summary: MeasurementSummary;
 };
@@ -41,50 +32,12 @@ type NavigatorWithWakeLock = Navigator & {
   };
 };
 
-const EXPERIMENTS: Experiment[] = [
-  {
-    id: "rest",
-    name: "Reposo y orientación",
-    description: "Deja el teléfono quieto y cambia lentamente su orientación.",
-    question: "¿Qué componente de la gravedad aparece en cada eje?",
-  },
-  {
-    id: "acceleration",
-    name: "Aceleración rectilínea",
-    description: "Mueve el teléfono en una dirección durante algunos segundos.",
-    question: "¿Cómo cambia la aceleración cuando comienza el movimiento?",
-  },
-  {
-    id: "braking",
-    name: "Aceleración y frenado",
-    description: "Acelera y detén el teléfono o un carrito donde esté montado.",
-    question: "¿Se distingue el impulso de la detención en el gráfico?",
-  },
-  {
-    id: "incline",
-    name: "Plano inclinado",
-    description: "Desliza el teléfono sobre una superficie con inclinación controlada.",
-    question: "¿La aceleración cambia al modificar el ángulo?",
-  },
-  {
-    id: "oscillation",
-    name: "Movimiento oscilatorio",
-    description: "Realiza un movimiento de ida y vuelta manteniendo un ritmo estable.",
-    question: "¿Se puede estimar un período a partir de los máximos?",
-  },
-];
-
 const TABS: { id: Tab; label: string; description: string }[] = [
-  { id: "live", label: "En vivo", description: "Lectura instantánea" },
-  { id: "measure", label: "Medir", description: "Guardar una corrida" },
+  { id: "calculations", label: "Magnitudes", description: "Qué mide el teléfono" },
+  { id: "measure", label: "Capturar", description: "Guardar muestras" },
   { id: "charts", label: "Gráficos", description: "Interpretar datos" },
   { id: "diagnostics", label: "Diagnóstico", description: "Verificar el teléfono" },
 ];
-
-function formatValue(value: number | null, digits = 2): string {
-  if (value === null || !Number.isFinite(value)) return "-";
-  return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}`;
-}
 
 function formatDuration(milliseconds: number): string {
   return `${(milliseconds / 1000).toFixed(1)} s`;
@@ -132,26 +85,6 @@ function CheckGlyph({ checked }: { checked: boolean }) {
     <span className={`check-glyph${checked ? " checked" : ""}`} aria-hidden="true">
       {checked ? "OK" : "-"}
     </span>
-  );
-}
-
-function ReadingTile({
-  label,
-  value,
-  unit,
-  accent,
-}: {
-  label: string;
-  value: number | null;
-  unit: string;
-  accent: "blue" | "orange" | "green" | "purple";
-}) {
-  return (
-    <div className={`reading-tile reading-tile-${accent}`}>
-      <span>{label}</span>
-      <strong>{formatValue(value)}</strong>
-      <small>{unit}</small>
-    </div>
   );
 }
 
@@ -219,13 +152,12 @@ function SensorStatusCard({
 }
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<Tab>("live");
+  const [activeTab, setActiveTab] = useState<Tab>("calculations");
   const [sensorState, setSensorState] = useState<SensorState>("idle");
   const [sensorError, setSensorError] = useState("");
   const [latest, setLatest] = useState<MotionSample | null>(null);
   const [liveSamples, setLiveSamples] = useState<MotionSample[]>([]);
   const [effectiveFrequencyHz, setEffectiveFrequencyHz] = useState<number | null>(null);
-  const [selectedExperimentId, setSelectedExperimentId] = useState("braking");
   const [isRecording, setIsRecording] = useState(false);
   const [recordingElapsedMs, setRecordingElapsedMs] = useState(0);
   const [measurement, setMeasurement] = useState<Measurement | null>(null);
@@ -245,9 +177,8 @@ export function App() {
 
   if (capabilities.current === null) capabilities.current = getSensorCapabilities();
   const deviceCapabilities = capabilities.current;
-  const selectedExperiment = EXPERIMENTS.find((item) => item.id === selectedExperimentId) ?? EXPERIMENTS[0];
   const chartSamples = measurement?.samples ?? liveSamples;
-  const kinematicPoints = measurement ? deriveXAxisKinematics(measurement.samples) : [];
+  const kinematicPoints = deriveXAxisKinematics(chartSamples);
   const diagnostics: Diagnostics = getDiagnostics(
     deviceCapabilities,
     sensorState,
@@ -320,8 +251,7 @@ export function App() {
         setLatest(sample);
         setLiveSamples([...liveBuffer]);
         if (sampleTimes.length > 1) {
-          const elapsed = sampleTimes[sampleTimes.length - 1] - sampleTimes[0];
-          setEffectiveFrequencyHz(elapsed > 0 ? ((sampleTimes.length - 1) / elapsed) * 1000 : null);
+          setEffectiveFrequencyHz(frecuenciaDeMuestreo(sampleTimes));
         }
       }
     });
@@ -356,7 +286,6 @@ export function App() {
 
     const summary = summarizeMeasurement(capturedSamples);
     setMeasurement({
-      experiment: selectedExperiment,
       samples: capturedSamples,
       summary: { ...summary, durationMs },
     });
@@ -413,11 +342,11 @@ export function App() {
       <main className="labmotion-main">
         <section className="intro-grid">
           <div className="intro-copy">
-            <span className="eyebrow">Prototipo de factibilidad · Grupo 1</span>
-            <h1>Haz visible el movimiento.</h1>
+            <span className="eyebrow">Demostrador de instrumentación · Grupo 1</span>
+            <h1>Haz visible lo que el teléfono puede medir.</h1>
             <p>
-              Un laboratorio portátil para observar cómo un smartphone convierte aceleración,
-              rotación y tiempo en datos de cinemática.
+              LabMotion muestra cómo un smartphone convierte aceleración, rotación y tiempo en
+              magnitudes de movimiento que cualquiera puede revisar en el código.
             </p>
             <div className="intro-pills">
               <span><span className="pill-dot pill-dot-blue" />Sin aplicación</span>
@@ -435,112 +364,38 @@ export function App() {
 
         <TabNavigation activeTab={activeTab} onChange={setActiveTab} />
 
-        {activeTab === "live" ? (
-          <section className="tab-content" role="tabpanel">
-            <div className="section-heading">
-              <div>
-                <span className="eyebrow">Observación directa</span>
-                <h2>Datos en vivo</h2>
-              </div>
-              <span className="badge">{effectiveFrequencyHz ? `${effectiveFrequencyHz.toFixed(1)} Hz` : "Esperando datos"}</span>
-            </div>
-
-            <section className="card readings-card">
-              <div className="card-heading">
-                <div>
-                  <h3>Aceleración lineal</h3>
-                  <p>{latest && primaryAccelerationIncludesGravity(latest) ? "Fallback: incluye gravedad" : "m/s2 en los tres ejes"}</p>
-                </div>
-                <span className="live-indicator"><span /> LIVE</span>
-              </div>
-              <div className="reading-grid">
-                <ReadingTile label="Eje X" value={latest ? primaryAcceleration(latest).x : null} unit="m/s2" accent="blue" />
-                <ReadingTile label="Eje Y" value={latest ? primaryAcceleration(latest).y : null} unit="m/s2" accent="orange" />
-                <ReadingTile label="Eje Z" value={latest ? primaryAcceleration(latest).z : null} unit="m/s2" accent="green" />
-                <ReadingTile label="Magnitud" value={latest ? axisMagnitude(primaryAcceleration(latest)) : null} unit="m/s2" accent="purple" />
-              </div>
-            </section>
-
-            <section className="card chart-card">
-              <div className="card-heading">
-                <div>
-                  <h3>Señal del acelerómetro</h3>
-                  <p>Últimas muestras recibidas en el navegador</p>
-                </div>
-                <div className="chart-legend" aria-label="Leyenda del gráfico">
-                  <span><i className="legend-blue" /> X</span>
-                  <span><i className="legend-orange" /> Y</span>
-                  <span><i className="legend-green" /> Z</span>
-                </div>
-              </div>
-              <div className="chart-frame">
-                <StripChart samples={liveSamples} mode="acceleration" />
-              </div>
-              <div className="chart-footnote">
-                <span>El gráfico confirma que el teléfono entrega una señal variable.</span>
-                <span>Ventana: últimos 720 puntos</span>
-              </div>
-            </section>
-
-            <div className="two-column-grid">
-              <section className="card compact-card">
-                <div className="card-heading">
-                  <div>
-                    <h3>Velocidad angular</h3>
-                    <p>Giroscopio · grados por segundo</p>
-                  </div>
-                  <span className="mini-symbol">gyro</span>
-                </div>
-                <div className="mini-readings">
-                  <span><b>alpha</b><strong>{formatValue(latest?.rotationRate.x ?? null, 1)}</strong></span>
-                  <span><b>beta</b><strong>{formatValue(latest?.rotationRate.y ?? null, 1)}</strong></span>
-                  <span><b>gamma</b><strong>{formatValue(latest?.rotationRate.z ?? null, 1)}</strong></span>
-                </div>
-              </section>
-              <section className="card compact-card signal-card">
-                <span className="eyebrow">Cadena experimental</span>
-                <div className="signal-flow">
-                  <span>Sensor</span><ArrowGlyph /><span>Datos</span><ArrowGlyph /><span>Gráfico</span>
-                </div>
-                <p>El teléfono funciona como instrumento, no sólo como pantalla.</p>
-              </section>
-            </div>
-          </section>
+        {activeTab === "calculations" ? (
+          <CalculationCatalog
+            latest={latest}
+            samples={chartSamples}
+            frequencyHz={effectiveFrequencyHz}
+            kinematicPoints={kinematicPoints}
+          />
         ) : null}
 
         {activeTab === "measure" ? (
           <section className="tab-content" role="tabpanel">
             <div className="section-heading">
               <div>
-                <span className="eyebrow">Experiencia de laboratorio</span>
-                <h2>Capturar una corrida</h2>
+                <span className="eyebrow">Captura local</span>
+                <h2>Guardar una serie de muestras</h2>
               </div>
               <span className="badge">Todo queda en este teléfono</span>
             </div>
 
-            <section className="card experiment-card">
+            <section className="card capture-card">
               <div className="card-heading">
                 <div>
-                  <h3>Elige el fenómeno</h3>
-                  <p>Este prototipo usa una misma instrumentación para varias experiencias.</p>
+                  <h3>Registrar lo que entrega el sensor</h3>
+                  <p>No tienes que elegir una experiencia: primero observamos la señal y después decidimos qué analizar.</p>
                 </div>
                 <button className="text-button" type="button" onClick={() => setShowHelp(true)}>¿Cómo funciona?</button>
               </div>
-              <label className="field-label" htmlFor="experiment">Experimento</label>
-              <select
-                className="experiment-select"
-                id="experiment"
-                value={selectedExperimentId}
-                onChange={(event) => setSelectedExperimentId(event.target.value)}
-                disabled={isRecording}
-              >
-                {EXPERIMENTS.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
-              </select>
-              <div className="experiment-description">
-                <span className="experiment-index">01</span>
+              <div className="capture-description">
+                <span className="capture-index">01</span>
                 <div>
-                  <strong>{selectedExperiment.description}</strong>
-                  <p>{selectedExperiment.question}</p>
+                  <strong>Aceleración, giro, orientación y tiempo</strong>
+                  <p>Cada muestra conserva las lecturas directas para que puedas revisar de dónde sale cada cálculo.</p>
                 </div>
               </div>
               <div className={`recording-panel${isRecording ? " recording" : ""}`}>
@@ -574,10 +429,10 @@ export function App() {
                 </ol>
               </section>
               <section className="card compact-card physical-card">
-                <span className="eyebrow">Para el prototipo físico</span>
-                <h3>Smartphone + soporte + trayectoria</h3>
-                <p>La página es la instrumentación digital. El soporte y el recorrido controlado serán la siguiente iteración de LabMotion.</p>
-                <div className="physical-tags"><span>smartphone</span><span>carrito</span><span>mesa</span></div>
+                <span className="eyebrow">Fuentes futuras</span>
+                <h3>GPS + cámara + micrófono</h3>
+                <p>El catálogo documenta otras fuentes posibles, pero esta versión demuestra las mediciones de movimiento que el navegador ya entrega.</p>
+                <div className="physical-tags"><span>GPS: posible</span><span>cámara: posible</span><span>barómetro: no expuesto</span></div>
               </section>
             </div>
           </section>
@@ -597,7 +452,7 @@ export function App() {
               <div className="chart-toolbar">
                 <div>
                   <h3>Variables registradas</h3>
-                  <p>{measurement ? `Experimento: ${measurement.experiment.name}` : "Activa sensores o guarda una medición para llenar el gráfico."}</p>
+                  <p>{measurement ? "Captura local de sensores" : "Activa sensores o guarda una medición para llenar el gráfico."}</p>
                 </div>
                 <div className="chart-mode-switch" role="group" aria-label="Variable del gráfico">
                   <button className={chartMode === "acceleration" ? "active" : ""} type="button" onClick={() => setChartMode("acceleration")}>Aceleración</button>
@@ -638,8 +493,8 @@ export function App() {
                   <div><strong>Interpretación responsable</strong><p>La velocidad y posición son estimaciones exploratorias: el ruido, el sesgo y la orientación del teléfono generan deriva al integrar la aceleración.</p></div>
                 </section>
                 <div className="export-actions">
-                  <button className="primary" type="button" onClick={() => downloadMeasurementCsv(measurement.samples, measurement.experiment.name)}>Descargar CSV</button>
-                  <button className="ghost" type="button" onClick={() => downloadMeasurementJson(measurement.samples, measurement.experiment.name, diagnostics)}>Descargar JSON + diagnóstico</button>
+                  <button className="primary" type="button" onClick={() => downloadMeasurementCsv(measurement.samples, "Captura de movimiento")}>Descargar CSV</button>
+                  <button className="ghost" type="button" onClick={() => downloadMeasurementJson(measurement.samples, "Captura de movimiento", diagnostics)}>Descargar JSON + diagnóstico</button>
                   <button className="ghost danger" type="button" onClick={() => { setMeasurement(null); showNotice("Medición eliminada de la sesión."); }}>Eliminar medición</button>
                 </div>
               </>
@@ -691,7 +546,7 @@ export function App() {
 
       <footer className="app-footer">
         <span>LabMotion · UMayor INGT1037 · Grupo 1</span>
-        <span>Prototipo experimental v0.1</span>
+        <a className="github-link" href="https://github.com/iiroak/UMayor-INGT1037-LabMotion" target="_blank" rel="noreferrer">Código abierto en GitHub</a>
       </footer>
 
       {showHelp ? (
@@ -700,7 +555,7 @@ export function App() {
             <p>El navegador escucha los eventos de movimiento que entrega el sistema operativo del smartphone. No se instala una aplicación.</p>
             <div className="modal-flow"><span>1. Sensor del teléfono</span><ArrowGlyph /><span>2. Evento web</span><ArrowGlyph /><span>3. Gráfico local</span></div>
             <p>El acelerómetro aporta aceleración en X, Y y Z. El giroscopio aporta velocidad angular. Cada muestra se guarda con su tiempo para comparar el fenómeno con su representación gráfica.</p>
-            <div className="modal-callout"><strong>Para la presentación</strong><span>Activa sensores, vuelve a Medir, selecciona Aceleración y frenado, inicia una corrida y mueve el teléfono delante del curso.</span></div>
+            <div className="modal-callout"><strong>Para la presentación</strong><span>Activa sensores, entra a Capturar, inicia una serie de muestras y mueve el teléfono delante del curso. Luego abre Magnitudes para explicar de dónde sale cada número.</span></div>
           </div>
         </Modal>
       ) : null}

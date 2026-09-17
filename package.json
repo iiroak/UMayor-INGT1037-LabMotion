@@ -1,5 +1,5 @@
 {
-  "name": "UMayor-INGT1037-Proyecto",
+  "name": "UMayor-INGT1037-LabMotion",
   "version": "0.1.0",
   "private": false,
   "type": "module",
@@ -8,6 +8,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b --noEmit",
+    "test": "vitest run",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "^5.7.2",
-    "vite": "^6.0.7"
+    "vite": "^6.0.7",
+    "vitest": "^5.0.1"
   }
 }
