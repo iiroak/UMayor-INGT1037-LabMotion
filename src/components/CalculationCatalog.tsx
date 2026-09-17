@@ -12,8 +12,6 @@ import {
 } from "../lib/fisica";
 import type { KinematicPoint } from "../lib/kinematics";
 import {
-  axisMagnitude,
-  primaryAcceleration,
   type Axis,
   type MotionSample,
 } from "../lib/sensors";
@@ -172,7 +170,6 @@ export function CalculationCatalog({
   frequencyHz,
   kinematicPoints,
 }: CalculationCatalogProps) {
-  const acceleration = latest ? primaryAcceleration(latest) : { x: null, y: null, z: null };
   const accelerationVector = latest ? completeVector(latest.acceleration) : null;
   const totalAcceleration = latest ? completeVector(latest.accelerationIncludingGravity) : null;
   const gravity = accelerationVector && totalAcceleration
@@ -186,7 +183,7 @@ export function CalculationCatalog({
     velocidad: sample.rotationRate.x,
   }));
   const angle = samples.length > 1 ? anguloGirado(angularSamples) : null;
-  const accelerationMagnitude = latest ? axisMagnitude(acceleration) : null;
+  const accelerationMagnitude = accelerationVector ? magnitudDeVector(accelerationVector) : null;
   const direct = CALCULATION_CATALOG.filter((item) => item.kind === "directa");
   const derived = CALCULATION_CATALOG.filter((item) => item.kind === "derivada");
 
