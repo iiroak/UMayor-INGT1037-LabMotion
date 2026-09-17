@@ -221,10 +221,10 @@ button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke
 .kinematics-grid { align-items: stretch; }
 .compact-chart-card { margin-top: 0; }
 .compact-chart-card .chart-frame { height: 220px; }
-.result-note, .privacy-note { display: flex; align-items: flex-start; gap: 11px; margin: 12px 0; padding: 14px; border: 1px solid #a67df233; border-radius: var(--app-radius); background: var(--theme-purple-background); }
+.result-note { display: flex; align-items: flex-start; gap: 11px; margin: 12px 0; padding: 14px; border: 1px solid #a67df233; border-radius: var(--app-radius); background: var(--theme-purple-background); }
 .note-mark { display: grid; place-items: center; flex: 0 0 auto; width: 23px; height: 23px; border-radius: 50%; background: var(--accent-purple); color: #fff; font-size: .72rem; font-weight: 800; }
-.result-note strong, .privacy-note strong { display: block; font-size: .78rem; font-weight: 700; }
-.result-note p, .privacy-note p { margin: 3px 0 0; color: var(--text-secondary); font-size: .74rem; line-height: 1.45; }
+.result-note strong { display: block; font-size: .78rem; font-weight: 700; }
+.result-note p { margin: 3px 0 0; color: var(--text-secondary); font-size: .74rem; line-height: 1.45; }
 .export-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
 .export-actions button { flex: 0 1 auto; min-height: 40px; font-size: .74rem; }
 
@@ -285,8 +285,6 @@ button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke
 .user-agent-details { margin-top: 14px; color: var(--text-secondary); font-size: .7rem; }
 .user-agent-details summary { cursor: pointer; color: var(--app-accent-dark); font-weight: 700; }
 .user-agent-details code { display: block; margin-top: 8px; overflow-wrap: anywhere; color: var(--text-tertiary); font-family: var(--font-mono); font-size: .65rem; line-height: 1.5; }
-.privacy-note { border-color: #53b55933; background: var(--theme-green-background); }
-.privacy-lock { display: grid; place-items: center; flex: 0 0 auto; min-width: 37px; height: 24px; border-radius: 6px; background: #53b55926; color: var(--app-success); font-family: var(--font-mono); font-size: .55rem; font-weight: 700; text-transform: uppercase; }
 
 .app-footer { display: flex; justify-content: space-between; gap: 12px; width: min(100% - 32px, 1040px); margin: 0 auto; padding: 0 0 max(24px, env(safe-area-inset-bottom)); color: var(--text-tertiary); font-size: .66rem; }
 .github-link { color: var(--app-accent-dark); font-weight: 700; text-decoration: none; }

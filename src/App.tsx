@@ -534,7 +534,6 @@ export function App() {
               <details className="user-agent-details"><summary>Ver user agent completo</summary><code>{diagnostics.userAgent}</code></details>
             </section>
 
-            <section className="privacy-note"><span className="privacy-lock">local</span><div><strong>Privacidad por diseño</strong><p>Las mediciones viven en memoria del navegador. LabMotion no tiene login, servidor de datos ni envío de telemetría.</p></div></section>
           </section>
         ) : null}
       </main>
