@@ -1,7 +1,6 @@
 import fisicaSource from "../lib/fisica.ts?raw";
 import {
   anguloGirado,
-  CAPABILITY_LEVELS,
   CALCULATION_CATALOG,
   errorRelativo,
   frecuenciaDeMuestreo,
@@ -274,23 +273,6 @@ export function CalculationCatalog({
         ))}
       </div>
 
-      <section className="card capability-card">
-        <div className="card-heading">
-          <div>
-            <span className="eyebrow">Alcance real de la web</span>
-            <h3>No prometemos sensores que el navegador no entrega</h3>
-          </div>
-          <span className="mini-symbol">scope</span>
-        </div>
-        <div className="capability-list">
-          {CAPABILITY_LEVELS.map((level) => (
-            <div className={`capability-row capability-${level.status}`} key={level.title}>
-              <span className="capability-status">{level.status === "disponible" ? "01" : level.status === "posible" ? "02" : "03"}</span>
-              <div><strong>{level.title}</strong><p>{level.detail}</p></div>
-            </div>
-          ))}
-        </div>
-      </section>
     </section>
   );
 }

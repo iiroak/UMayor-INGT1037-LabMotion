@@ -348,11 +348,6 @@ export function App() {
               LabMotion muestra cómo un smartphone convierte aceleración, rotación y tiempo en
               magnitudes de movimiento que cualquiera puede revisar en el código.
             </p>
-            <div className="intro-pills">
-              <span><span className="pill-dot pill-dot-blue" />Sin aplicación</span>
-              <span><span className="pill-dot pill-dot-orange" />Sin backend</span>
-              <span><span className="pill-dot pill-dot-green" />Datos locales</span>
-            </div>
           </div>
           <SensorStatusCard
             state={sensorState}

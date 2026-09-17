@@ -106,12 +106,6 @@ button:focus-visible, select:focus-visible, summary:focus-visible {
 }
 .intro-copy h1 { max-width: 570px; margin: 10px 0 12px; font-size: clamp(2.35rem, 6vw, 4.3rem); font-weight: 600; letter-spacing: -.065em; line-height: .98; text-wrap: balance; }
 .intro-copy p { max-width: 540px; margin: 0; color: var(--text-secondary); font-size: 1.03rem; line-height: 1.55; }
-.intro-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
-.intro-pills > span { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border: 1px solid var(--app-border); border-radius: 999px; background: var(--app-surface); color: var(--text-secondary); font-size: .7rem; font-weight: 600; }
-.pill-dot { width: 6px; height: 6px; border-radius: 50%; }
-.pill-dot-blue { background: var(--accent-blue); }
-.pill-dot-orange { background: var(--accent-orange); }
-.pill-dot-green { background: var(--accent-green); }
 .sensor-status-card { display: flex; flex-direction: column; min-width: 0; padding: 22px; border: 1px solid #3a83f733; border-radius: var(--radius-2xl); background: var(--theme-blue-background); box-shadow: var(--shadow-sm); }
 .sensor-status-heading { display: flex; align-items: flex-start; gap: 10px; }
 .sensor-status-heading .status-dot { flex: 0 0 auto; margin-top: 6px; }
@@ -268,13 +262,6 @@ button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke
 .calculation-code summary { padding-top: 9px; cursor: pointer; color: var(--app-accent-dark); font-size: .68rem; font-weight: 700; }
 .calculation-code pre { max-height: 220px; margin: 9px 0 0; padding: 11px; overflow: auto; border-radius: var(--radius-lg); background: #171717; color: #e7e7e7; font-family: var(--font-mono); font-size: .65rem; line-height: 1.55; white-space: pre-wrap; }
 .calculation-code code { font-family: inherit; }
-.capability-card { margin-top: 24px; background: var(--theme-green-background); border-color: #53b55933; }
-.capability-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
-.capability-row { display: flex; align-items: flex-start; gap: 9px; min-width: 0; padding: 12px; border-radius: var(--radius-lg); background: #ffffff66; }
-.capability-status { flex: 0 0 auto; color: var(--app-accent-dark); font-family: var(--font-mono); font-size: .66rem; font-weight: 700; }
-.capability-row strong { display: block; color: var(--text-primary); font-size: .74rem; font-weight: 700; }
-.capability-row p { margin: 4px 0 0; color: var(--text-secondary); font-size: .68rem; line-height: 1.45; }
-.capability-limitada .capability-status { color: var(--app-danger); }
 
 .diagnostics-card { margin-top: 0; }
 .diagnostic-intro { display: flex; align-items: center; gap: 16px; padding-bottom: 19px; border-bottom: 1px solid var(--app-border); }
@@ -328,7 +315,7 @@ button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke
   .sensor-status-card { padding: 18px; }
   .sensor-status-card > p { min-height: 0; }
   .reading-grid, .summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .magnitude-grid, .capability-list { grid-template-columns: 1fr; }
+  .magnitude-grid { grid-template-columns: 1fr; }
   .catalog-intro-card { grid-template-columns: 1fr; }
   .chart-frame-large { height: 310px; }
 }
@@ -341,8 +328,6 @@ button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke
   .header-status { max-width: 145px; overflow: hidden; text-overflow: ellipsis; }
   .intro-grid { padding: 23px 0 20px; }
   .intro-copy p { font-size: .92rem; }
-  .intro-pills { margin-top: 17px; }
-  .intro-pills > span { font-size: .65rem; }
   .tab-navigation { overflow-x: auto; grid-template-columns: repeat(4, minmax(122px, 1fr)); }
   .tab-button { padding: 9px 10px; }
   .tab-content { padding-top: 26px; }

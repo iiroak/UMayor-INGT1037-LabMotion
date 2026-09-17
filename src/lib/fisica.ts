@@ -16,12 +16,6 @@ export type CalculationDefinition = {
   region?: string;
 };
 
-export type CapabilityDefinition = {
-  title: string;
-  detail: string;
-  status: "disponible" | "posible" | "limitada";
-};
-
 // #region magnitudDeVector
 /**
  * Magnitud de un vector de tres componentes.
@@ -260,23 +254,5 @@ export const CALCULATION_CATALOG: CalculationDefinition[] = [
     formula: "theta = integral(omega, delta_t)",
     source: "Integracion trapezoidal de rotationRate",
     region: "anguloGirado",
-  },
-];
-
-export const CAPABILITY_LEVELS: CapabilityDefinition[] = [
-  {
-    title: "Medible ahora",
-    detail: "Aceleracion, gravedad, giro, orientacion, tiempo y frecuencia mediante APIs que ya usa LabMotion.",
-    status: "disponible",
-  },
-  {
-    title: "Posible con otra implementacion",
-    detail: "GPS, camara, microfono y Generic Sensor API tienen APIs web, pero no forman parte de esta captura.",
-    status: "posible",
-  },
-  {
-    title: "Limitado en la web",
-    detail: "No se promete barometro ni magnetometro: el navegador no ofrece una ruta estable y portable para esas lecturas.",
-    status: "limitada",
   },
 ];
